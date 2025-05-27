@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Server Control Dashboard</title>
+        <style>
+            :root {
+                --bg-color: #1e1e1e;
+                --panel-bg: #2d2d2d;
+                --border-color: #444;
+                --text-color: #e0e0e0;
+                --text-muted: #999;
+                --title-bar-bg: #252526;
+                --title-bar-text: #cccccc;
+                --status-running-bg: #28a745;
+                --status-stopped-bg: #dc3545;
+                --button-bg: #0d6efd;
+                --button-hover-bg: #0b5ed7;
+                --button-disabled-bg: #3a3a3a;
+                --button-disabled-text: #666;
+                --log-bg: #1a1a1a;
+                --log-text: #d4d4d4;
+                --log-timestamp: #888;
+                --control-hover-bg: #333;
+                --control-close-hover-bg: #e81123;
+                --control-close-hover-text: #fff;
+                --scrollbar-track: #2d2d2d;
+                --scrollbar-thumb: #555;
+            }
+
+            body {
+                font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue",
+                    sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                font-size: 14px;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            /* --- Custom Title Bar --- */
+            .title-bar {
+                background-color: var(--title-bar-bg);
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 8px;
+                border-bottom: 1px solid var(--border-color);
+                flex-shrink: 0;
+                user-select: none;
+            }
+            .title-bar .title {
+                font-weight: 600;
+                color: var(--title-bar-text);
+                margin-left: 4px;
+                -webkit-app-region: drag;
+                flex-grow: 1;
+                text-align: center;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            .title-bar .window-controls {
+                display: flex;
+                -webkit-app-region: no-drag;
+            }
+            .title-bar .control-button {
+                width: 40px;
+                height: 32px;
+                border: none;
+                background: none;
+                font-size: 16px;
+                line-height: 32px;
+                text-align: center;
+                color: var(--title-bar-text);
+                cursor: pointer;
+                transition: background-color 0.15s ease;
+            }
+            .title-bar .control-button:hover {
+                background-color: var(--control-hover-bg);
+            }
+            .title-bar .control-button.close-button:hover {
+                background-color: var(--control-close-hover-bg);
+                color: var(--control-close-hover-text);
+            }
+            #minimize-btn::before {
+                content: "—";
+            }
+            #maximize-btn::before {
+                content: "□";
+            }
+            #close-btn::before {
+                content: "✕";
+            }
+
+            .main-content {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .container {
+                flex-grow: 1;
+                background-color: var(--panel-bg);
+                margin: 20px;
+                padding: 25px;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 25px;
+            }
+            h1 {
+                text-align: center;
+                margin: 0 0 20px 0;
+                color: var(--text-color);
+                font-size: 1.6em;
+                font-weight: 600;
+            }
+            .server-card {
+                background-color: var(--panel-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 5px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .server-title {
+                font-size: 1.3em;
+                font-weight: 600;
+                color: var(--text-color);
+            }
+            .status-indicator {
+                display: flex;
+                align-items: center;
+            }
+            .status {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+                font-size: 0.85em;
+                color: white;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .status-stopped {
+                background-color: var(--status-stopped-bg);
+            }
+            .status-running {
+                background-color: var(--status-running-bg);
+            }
+            .controls {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            button {
+                background-color: var(--button-bg);
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.95em;
+                transition: background-color 0.2s ease-in-out,
+                    opacity 0.2s ease-in-out;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            button .icon {
+                font-size: 1.1em;
+            }
+            button:hover {
+                background-color: var(--button-hover-bg);
+            }
+            button:disabled {
+                background-color: var(--button-disabled-bg);
+                color: var(--button-disabled-text);
+                cursor: not-allowed;
+                opacity: 0.7;
+            }
+            .log-container {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .log-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .log-header label {
+                font-weight: 600;
+                color: var(--text-muted);
+            }
+            .log-header button {
+                padding: 4px 8px;
+                font-size: 0.85em;
+                background-color: #495057;
+            }
+            .log-header button:hover {
+                background-color: #3a4046;
+            }
+            .logs {
+                background-color: var(--log-bg);
+                color: var(--log-text);
+                border: 1px solid var(--border-color);
+                padding: 10px 15px;
+                border-radius: 4px;
+                height: 200px;
+                overflow-y: scroll;
+                font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+                font-size: 0.9em;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+            .logs div {
+                padding: 1px 0;
+                line-height: 1.4;
+            }
+            .logs .timestamp {
+                color: var(--log-timestamp);
+                margin-right: 8px;
+                user-select: none;
+            }
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: var(--scrollbar-track);
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--scrollbar-thumb);
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Custom Title Bar -->
+        <div class="title-bar">
+            <div class="title">Dashboard Control Panel</div>
+            <div class="window-controls">
+                <button
+                    id="minimize-btn"
+                    class="control-button"
+                    title="Minimize"
+                ></button>
+                <button
+                    id="maximize-btn"
+                    class="control-button"
+                    title="Maximize"
+                ></button>
+                <button
+                    id="close-btn"
+                    class="control-button close-button"
+                    title="Close"
+                ></button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Backend Server Card -->
+                <div class="server-card">
+                    <div class="card-header">
+                        <div class="server-title">Backend Server</div>
+                        <div class="status-indicator">
+                            <div
+                                class="status status-stopped"
+                                id="backend-status"
+                            >
+                                Stopped
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button id="backend-start" title="Start Backend Server">
+                            <span class="icon">▶</span> Start
+                        </button>
+                        <button
+                            id="backend-stop"
+                            title="Stop Backend Server"
+                            disabled
+                        >
+                            <span class="icon">■</span> Stop
+                        </button>
+                        <button
+                            id="backend-edit-config"
+                            title="Edit Backend Configuration File"
+                        >
+                            <span class="icon">⚙️</span> Config
+                        </button>
+                    </div>
+                    <div class="log-container">
+                        <div class="log-header">
+                            <label>Backend Logs</label>
+                            <button
+                                id="backend-clear-log"
+                                title="Clear Backend Log View"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <div class="logs" id="backend-logs"></div>
+                    </div>
+                </div>
+
+                <!-- Frontend Server Card -->
+                <div class="server-card">
+                    <div class="card-header">
+                        <div class="server-title">Frontend Server</div>
+                        <div class="status-indicator">
+                            <div
+                                class="status status-stopped"
+                                id="frontend-status"
+                            >
+                                Stopped
+                            </div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button
+                            id="frontend-start"
+                            title="Start Frontend Server"
+                            disabled
+                        >
+                            <span class="icon">▶</span> Start
+                        </button>
+                        <button
+                            id="frontend-stop"
+                            title="Stop Frontend Server"
+                            disabled
+                        >
+                            <span class="icon">■</span> Stop
+                        </button>
+                        <button
+                            id="frontend-open-browser"
+                            title="Open Frontend in Browser"
+                            disabled
+                        >
+                            <span class="icon">🔗</span> Open
+                        </button>
+                        <button
+                            id="frontend-edit-config"
+                            title="Edit Frontend Configuration File"
+                            disabled
+                        >
+                            <span class="icon">⚙️</span> Config
+                        </button>
+                    </div>
+                    <div class="log-container">
+                        <div class="log-header">
+                            <label>Frontend Logs</label>
+                            <button
+                                id="frontend-clear-log"
+                                title="Clear Frontend Log View"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <div class="logs" id="frontend-logs"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="dashboard.js"></script>
+    </body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "port": 5001,
+  "host": "localhost",
+  "logFile": "backend/logs/server.log",
+  "name": "Backend Server",
+  "description": "Express.js Backend Server",
+  "env": "development"
+}

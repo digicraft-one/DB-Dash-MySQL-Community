@@ -1,0 +1,45 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Electron build output
+dist/
+release/
+*.pack
+*.asar
+*.dmg
+*.exe
+*.msi
+*.rpm
+*.deb
+*.snap
+*.appx
+*.zip
+*.tar.gz
+
+# Project specifics
+config/ # Ignore generated config files
+
+# Log files (if any were created in root)
+*.log
+
+# IDE specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp 
