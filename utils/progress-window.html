@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Installing Node.js</title>
+        <style>
+            :root {
+                --bg-color: #121212;
+                --panel-bg: #1e1e1e;
+                --card-bg: #21212d;
+                --border-color: #2a2a3a;
+                --text-color: #e0e0f0;
+                --text-muted: #7a7a8c;
+                --accent-color: #6c5ce7;
+                --accent-hover: #5649c0;
+                --status-running: #00b894;
+                --status-stopped: #d63031;
+                --progress-bg: #2a2a3a;
+                --progress-fill: #6c5ce7;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Inter", -apple-system, BlinkMacSystemFont,
+                    sans-serif;
+            }
+
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                overflow: hidden;
+                border-radius: 10px;
+                border: 1px solid var(--border-color);
+            }
+
+            .container {
+                background-color: var(--panel-bg);
+                border-radius: 10px;
+                padding: 30px;
+                width: 100%;
+                max-width: 350px;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                border: 1px solid var(--border-color);
+                animation: fadeIn 0.3s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 20px;
+                background: linear-gradient(
+                    135deg,
+                    var(--accent-color),
+                    var(--accent-hover)
+                );
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                color: white;
+                font-weight: bold;
+                box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+            }
+
+            .title {
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-color);
+                margin-bottom: 8px;
+                letter-spacing: 0.3px;
+            }
+
+            .message {
+                font-size: 14px;
+                color: var(--text-muted);
+                margin-bottom: 25px;
+                line-height: 1.5;
+            }
+
+            .progress-container {
+                width: 100%;
+                background: var(--progress-bg);
+                border-radius: 8px;
+                overflow: hidden;
+                margin-bottom: 15px;
+                height: 6px;
+            }
+
+            .progress-bar {
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    var(--accent-color),
+                    var(--accent-hover)
+                );
+                width: 0%;
+                transition: width 0.3s ease;
+                border-radius: 8px;
+                position: relative;
+            }
+
+            .progress-bar::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent
+                );
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    transform: translateX(-100%);
+                }
+                100% {
+                    transform: translateX(100%);
+                }
+            }
+
+            .progress-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 8px;
+            }
+
+            .progress-text {
+                font-size: 12px;
+                color: var(--text-muted);
+                font-weight: 500;
+            }
+
+            .status-indicator {
+                display: inline-flex;
+                align-items: center;
+                font-size: 12px;
+                color: var(--text-muted);
+            }
+
+            .status-indicator::before {
+                content: "";
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent-color);
+                margin-right: 6px;
+                animation: blink 1.5s infinite;
+            }
+
+            @keyframes blink {
+                0%,
+                50% {
+                    opacity: 1;
+                }
+                51%,
+                100% {
+                    opacity: 0.5;
+                }
+            }
+
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(108, 92, 231, 0.2);
+                border-top-color: var(--accent-color);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 20px auto 0;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">N</div>
+            <h1 class="title">Installing Node.js</h1>
+            <p class="message" id="message">Preparing installation...</p>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="progress-info">
+                <span class="status-indicator">Installing</span>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <div class="spinner" id="spinner"></div>
+        </div>
+
+        <script>
+            const { ipcRenderer } = require("electron");
+            const os = require("os");
+
+            // Update message
+            ipcRenderer.on("update-message", (event, message) => {
+                document.getElementById("message").textContent = message;
+            });
+
+            // Update progress
+            ipcRenderer.on("download-progress", (event, progress) => {
+                const progressBar = document.getElementById("progressBar");
+                const progressText = document.getElementById("progressText");
+                const spinner = document.getElementById("spinner");
+
+                progressBar.style.width = progress + "%";
+                progressText.textContent = progress + "%";
+
+                // Hide spinner when download is complete
+                if (progress >= 100) {
+                    spinner.style.display = "none";
+                    document.querySelector(".status-indicator").textContent =
+                        "Completed";
+                    document.querySelector(
+                        ".status-indicator::before",
+                    ).style.background = "#00b894";
+                    document.querySelector(
+                        ".status-indicator::before",
+                    ).style.animation = "none";
+                }
+            });
+        </script>
+    </body>
+</html>

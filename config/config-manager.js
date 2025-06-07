@@ -1,30 +1,48 @@
-const fs = require('fs');
-const path = require('path');
-const { EventEmitter } = require('events');
+const fs = require("fs");
+const path = require("path");
+const { EventEmitter } = require("events");
+const { app } = require("electron");
 
 class ConfigManager extends EventEmitter {
     constructor() {
         super();
-        this.configDir = path.join(__dirname, '..', 'config');
+
+        const isPackaged = app.isPackaged;
+
+        // Writable config directory
+        this.configDir = isPackaged
+            ? path.join(process.resourcesPath, "app", "config")
+            : path.join(__dirname, "..", "config");
+
+        // Log directories
+        this.backendLogDir = isPackaged
+            ? path.join(process.resourcesPath, "app", "backend", "logs")
+            : path.join(__dirname, "..", "backend", "logs");
+
+        this.frontendLogDir = isPackaged
+            ? path.join(process.resourcesPath, "app", "frontend", "logs")
+            : path.join(__dirname, "..", "frontend", "logs");
+
         this.defaultConfigs = {
             backend: {
                 port: 3001,
-                host: 'localhost',
-                logFile: 'backend/logs/server.log',
-                name: 'Backend Server',
-                description: 'Express.js Backend Server',
-                env: 'development'
+                host: "localhost",
+                logFile: path.join(this.backendLogDir, "server.log"),
+                name: "Backend Server",
+                description: "Express.js Backend Server",
+                env: "development",
             },
             frontend: {
                 port: 3000,
-                host: 'localhost',
-                logFile: 'frontend/logs/server.log',
-                name: 'Frontend Server',
-                description: 'Vite React Frontend Server',
-                env: 'development',
-                backendUrl: 'http://localhost:3001'
-            }
+                host: "localhost",
+                logFile: path.join(this.frontendLogDir, "server.log"),
+                name: "Frontend Dev Server",
+                description: "Vite React Development Server",
+                env: "development",
+                backendUrl: "http://localhost:3001",
+            },
         };
+
         this.watchers = {};
     }
 
@@ -36,29 +54,26 @@ class ConfigManager extends EventEmitter {
         }
 
         // Create log directories
-        const backendLogDir = path.join(__dirname, '..', 'backend', 'logs');
-        const frontendLogDir = path.join(__dirname, '..', 'frontend', 'logs');
-        
-        if (!fs.existsSync(backendLogDir)) {
-            fs.mkdirSync(backendLogDir, { recursive: true });
+        if (!fs.existsSync(this.backendLogDir)) {
+            fs.mkdirSync(this.backendLogDir, { recursive: true });
         }
-        if (!fs.existsSync(frontendLogDir)) {
-            fs.mkdirSync(frontendLogDir, { recursive: true });
+        if (!fs.existsSync(this.frontendLogDir)) {
+            fs.mkdirSync(this.frontendLogDir, { recursive: true });
         }
 
         // Initialize config files if they don't exist
-        this.initializeConfig('backend');
-        this.initializeConfig('frontend');
+        this.initializeConfig("backend");
+        this.initializeConfig("frontend");
 
         // Start watching config files
-        this.startWatching('backend');
-        this.startWatching('frontend');
+        this.startWatching("backend");
+        this.startWatching("frontend");
     }
 
     // Start watching a config file
     startWatching(serverType) {
         const configPath = this.getConfigPath(serverType);
-        
+
         // Stop any existing watcher
         if (this.watchers[serverType]) {
             this.watchers[serverType].close();
@@ -66,9 +81,9 @@ class ConfigManager extends EventEmitter {
 
         // Start new watcher
         this.watchers[serverType] = fs.watch(configPath, (eventType) => {
-            if (eventType === 'change') {
+            if (eventType === "change") {
                 // Emit config change event
-                this.emit('configChanged', serverType);
+                this.emit("configChanged", serverType);
             }
         });
     }
@@ -90,7 +105,7 @@ class ConfigManager extends EventEmitter {
     loadConfig(serverType) {
         try {
             const configPath = this.getConfigPath(serverType);
-            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
             return this.validateConfig(serverType, config);
         } catch (error) {
             console.error(`Error loading ${serverType} config:`, error);
@@ -103,7 +118,10 @@ class ConfigManager extends EventEmitter {
         try {
             const configPath = this.getConfigPath(serverType);
             const validatedConfig = this.validateConfig(serverType, config);
-            fs.writeFileSync(configPath, JSON.stringify(validatedConfig, null, 2));
+            fs.writeFileSync(
+                configPath,
+                JSON.stringify(validatedConfig, null, 2),
+            );
             return true;
         } catch (error) {
             console.error(`Error saving ${serverType} config:`, error);
@@ -123,7 +141,9 @@ class ConfigManager extends EventEmitter {
                 if (typeof config[key] === typeof defaultConfig[key]) {
                     validatedConfig[key] = config[key];
                 } else {
-                    console.warn(`Invalid type for ${key} in ${serverType} config. Using default value.`);
+                    console.warn(
+                        `Invalid type for ${key} in ${serverType} config. Using default value.`,
+                    );
                 }
             }
         }
@@ -140,13 +160,13 @@ class ConfigManager extends EventEmitter {
     // Get log file path
     getLogFilePath(serverType) {
         const config = this.loadConfig(serverType);
-        return path.join(__dirname, '..', config.logFile);
+        return config.logFile; // Already absolute path now
     }
 
     // Cleanup watchers
     cleanup() {
-        Object.values(this.watchers).forEach(watcher => watcher.close());
+        Object.values(this.watchers).forEach((watcher) => watcher.close());
     }
 }
 
-module.exports = new ConfigManager(); 
+module.exports = new ConfigManager();

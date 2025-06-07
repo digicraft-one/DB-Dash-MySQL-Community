@@ -1,69 +1,115 @@
 {
-  "name": "sql-dashboard",
-  "version": "1.0.0",
-  "description": "SQL Dashboard Control Panel",
-  "main": "electron.js",
-  "scripts": {
-    "start": "electron .",
-    "dev": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:frontend": "cd frontend && npm run build",
-    "package": "npm run build:frontend && electron-builder",
-    "dist": "npm run package",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "keywords": [],
-  "author": "DigiCraft",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "electron": "^28.1.0",
-    "electron-builder": "^24.9.1"
-  },
-  "build": {
-    "appId": "com.example.sqldashboard",
-    "productName": "SQL Dashboard Panel",
-    "directories": {
-      "output": "dist"
+    "name": "dbdash-community",
+    "version": "1.0.0",
+    "description": "DBDash Community - MySQL Desktop Dashboard",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron .",
+        "postinstall": "electron-rebuild",
+        "build": "electron-builder",
+        "build:win": "electron-builder --win",
+        "build:mac": "electron-builder --mac",
+        "build:linux": "electron-builder --linux",
+        "clean": "rm -rf dist"
     },
-    "files": [
-      "electron.js",
-      "dashboard.html",
-      "dashboard.js",
-      "package.json",
-      "config/",
-      "assets/",
-      "backend/",        
-      "!backend/logs",  
-      "!backend/.gitignore",
-      "frontend/dist/" 
-    ],
-    "extraResources": [
-        { 
-            "from": "node_modules/node-pty/build/Release/", 
-            "to": "node_modules/node-pty/build/Release/", 
-            "filter": ["*.node"] 
+    "keywords": [],
+    "author": "DigiCraft",
+    "license": "ISC",
+    "type": "commonjs",
+    "devDependencies": {
+        "electron": "^25.9.8",
+        "electron-builder": "^24.13.3",
+        "electron-rebuild": "^3.2.9"
+    },
+    "build": {
+        "appId": "com.digicraft.dbdash-community",
+        "productName": "DBDash Community",
+        "directories": {
+            "output": "dist",
+            "buildResources": "build"
+        },
+        "icon": "assets/icons/icon",
+        "asar": true,
+        "asarUnpack": [
+            "**/backend/**",
+            "**/config/**"
+        ],
+        "files": [
+            "main.js",
+            "dashboard.js",
+            "dashboard.html",
+            "package.json",
+            "config/",
+            "assets/",
+            "backend/",
+            "frontend/",
+            "utils/",
+            "!.git/**",
+            "!backend/logs/server.log",
+            "!backend/.env",
+            "!backend/.gitignore",
+            "!backend/package-lock.json",
+            "!frontend/logs/server.log",
+            "!frontend/src/.prettierrc",
+            "!frontend/.gitignore",
+            "!frontend/eslint.config.js",
+            "!frontend/package-lock.json",
+            "!frontend/README.md",
+            "!.gitignore",
+            "!.prettierrc",
+            "!.package-lock.json"
+        ],
+        "extraResources": [
+            {
+                "from": "dashboard.js",
+                "to": "app/dashboard.js"
+            },
+            {
+                "from": "dashboard.html",
+                "to": "app/dashboard.html"
+            },
+            {
+                "from": "config",
+                "to": "app/config"
+            },
+            {
+                "from": "assets",
+                "to": "app/assets"
+            },
+            {
+                "from": "frontend",
+                "to": "app/frontend"
+            },
+            {
+                "from": "backend",
+                "to": "app/backend"
+            },
+            {
+                "from": "utils",
+                "to": "app/utils"
+            }
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "assets/icons/icon.ico",
+            "artifactName": "${productName}-Setup-${version}.${ext}",
+            "publisherName": "DigiCraft"
+        },
+        "mac": {
+            "target": "dmg",
+            "icon": "assets/icons/icon.icns"
+        },
+        "linux": {
+            "target": "AppImage",
+            "icon": "assets/icons/icon.png"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "DBDash Community"
         }
-    ],
-    "win": {
-      "target": "nsis", 
-      "icon": "assets/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
-    "asar": false
-  },
-  "dependencies": {
-    "ansi-to-html": "^0.7.2"
-  }
+    }
 }

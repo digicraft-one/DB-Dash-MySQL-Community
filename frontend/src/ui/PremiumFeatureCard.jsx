@@ -46,7 +46,7 @@ const PremiumFeatureModal = ({
                             {title}
                         </p>
                         <a
-                            href="https://mysql.dbdash.live/premium"
+                            href="https://dbdash.live/download#professional"
                             target="_blank"
                             className="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-500 text-gray-900 font-bold text-lg rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(234,179,8,0.4)]"
                         >
