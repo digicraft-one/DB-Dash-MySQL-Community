@@ -1,5 +1,5 @@
 {
-  "port": 5001,
+  "port": 24211,
   "host": "localhost",
   "logFile": "backend/logs/server.log",
   "name": "Backend Server",

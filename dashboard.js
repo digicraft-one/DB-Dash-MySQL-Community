@@ -1,4 +1,13 @@
 const { ipcRenderer } = require("electron");
+const platform = process.platform;
+
+// Window Controls
+const macControls = document.getElementById("mac");
+const winControls = document.getElementById("win");
+
+platform === "win32"
+    ? (macControls.style.display = "none")
+    : (winControls.style.display = "none");
 
 // DOM Elements & State
 const backendStatusEl = document.getElementById("backend-status");
@@ -19,6 +28,9 @@ const frontendClearLogBtn = document.getElementById("frontend-clear-log");
 const minimizeBtn = document.getElementById("minimize-btn");
 const maximizeBtn = document.getElementById("maximize-btn");
 const closeBtn = document.getElementById("close-btn");
+const winMinimizeBtn = document.getElementById("win-minimize-btn");
+const winMaximizeBtn = document.getElementById("win-maximize-btn");
+const winCloseBtn = document.getElementById("win-close-btn");
 
 let isBackendRunning = false;
 let isFrontendRunning = false;
@@ -197,6 +209,13 @@ maximizeBtn.addEventListener("click", () =>
     ipcRenderer.send("maximize-restore-window"),
 );
 closeBtn.addEventListener("click", () => ipcRenderer.send("close-window"));
+winMinimizeBtn.addEventListener("click", () =>
+    ipcRenderer.send("minimize-window"),
+);
+winMaximizeBtn.addEventListener("click", () =>
+    ipcRenderer.send("maximize-restore-window"),
+);
+winCloseBtn.addEventListener("click", () => ipcRenderer.send("close-window"));
 
 // Add titles to window controls
 minimizeBtn.title = "Minimize Window";

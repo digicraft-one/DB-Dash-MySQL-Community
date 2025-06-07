@@ -1174,9 +1174,11 @@ ipcMain.on("maximize-restore-window", () => {
 });
 
 ipcMain.on("close-window", async () => {
-    logger.info("system", "Window close requested, quitting application");
-
-    await quitApplication();
+    logger.info("system", "Window close requested.");
+    if (!app.isQuitting) mainWindow?.hide();
+    else {
+        await quitApplication();
+    }
 });
 
 ipcMain.on("start-server", (event, serverType) => {

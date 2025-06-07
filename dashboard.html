@@ -33,6 +33,7 @@
                 box-sizing: border-box;
                 font-family: "Inter", -apple-system, BlinkMacSystemFont,
                     sans-serif;
+                user-select: none;
             }
 
             body {
@@ -74,7 +75,7 @@
             .window-control {
                 width: 14px;
                 height: 14px;
-                border-radius: 50%;
+                /* border-radius: 50%; */
                 cursor: pointer;
                 transition: all 0.2s ease;
                 display: flex;
@@ -87,14 +88,30 @@
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             }
 
-            .close-btn {
+            #mac .close-btn {
+                border-radius: 50%;
                 background-color: #ff5f56;
             }
-            .minimize-btn {
+            #mac .minimize-btn {
+                border-radius: 50%;
                 background-color: #ffbd2e;
             }
-            .maximize-btn {
+            #mac .maximize-btn {
+                border-radius: 50%;
                 background-color: #27c93f;
+            }
+
+            #win .close-btn {
+                width: 25px;
+                background-color: var(--card-bg);
+            }
+            #win .minimize-btn {
+                width: 25px;
+                background-color: var(--card-bg);
+            }
+            #win .maximize-btn {
+                width: 25px;
+                background-color: var(--card-bg);
             }
 
             /* Main Content */
@@ -132,11 +149,6 @@
                 overflow: hidden;
             }
 
-            .server-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            }
-
             .card-header {
                 display: flex;
                 justify-content: space-between;
@@ -161,7 +173,6 @@
                 width: 10px;
                 height: 10px;
                 border-radius: 50%;
-                background-color: var(--status-stopped);
                 box-shadow: 0 0 10px rgba(214, 48, 49, 0.5);
                 transition: all 0.3s ease;
             }
@@ -183,11 +194,6 @@
             }
 
             .status-stopped {
-                background: linear-gradient(
-                    135deg,
-                    rgba(214, 48, 49, 0.2),
-                    rgba(214, 48, 49, 0.1)
-                );
                 color: var(--status-stopped);
                 border-color: rgba(214, 48, 49, 0.3);
             }
@@ -263,6 +269,12 @@
 
             .btn-secondary:hover {
                 background-color: var(--button-hover);
+            }
+
+            .btn-clear {
+                background-color: var(--status-stopped);
+                color: var(--text-color);
+                padding: 2px;
             }
 
             .btn:disabled {
@@ -400,11 +412,11 @@
             }
         </style>
     </head>
+
     <body>
         <!-- Title Bar -->
         <div class="title-bar">
-            <div class="app-title">SERVER CONTROL PANEL</div>
-            <div class="window-controls">
+            <div class="window-controls" id="mac">
                 <div class="window-control close-btn" id="close-btn"></div>
                 <div
                     class="window-control minimize-btn"
@@ -414,6 +426,57 @@
                     class="window-control maximize-btn"
                     id="maximize-btn"
                 ></div>
+            </div>
+            <div class="app-title">SERVER CONTROL PANEL</div>
+            <div class="window-controls" id="win">
+                <div class="window-control minimize-btn" id="win-minimize-btn">
+                    <svg width="10" height="10" viewBox="0 0 10 10">
+                        <line
+                            x1="1"
+                            y1="5"
+                            x2="9"
+                            y2="5"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </div>
+                <div class="window-control maximize-btn" id="win-maximize-btn">
+                    <svg width="10" height="10" viewBox="0 0 10 10">
+                        <rect
+                            x="1"
+                            y="1"
+                            width="8"
+                            height="8"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            fill="none"
+                        />
+                    </svg>
+                </div>
+                <div class="window-control close-btn" id="win-close-btn">
+                    <svg width="10" height="10" viewBox="0 0 10 10">
+                        <line
+                            x1="1"
+                            y1="1"
+                            x2="9"
+                            y2="9"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                        />
+                        <line
+                            x1="9"
+                            y1="1"
+                            x2="1"
+                            y2="9"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </div>
             </div>
         </div>
 
@@ -513,7 +576,7 @@
                         <div class="log-header">
                             <div class="log-title">Server Logs</div>
                             <button
-                                class="btn btn-secondary"
+                                class="btn btn-clear"
                                 id="backend-clear-log"
                                 style="padding: 4px 10px; font-size: 11px"
                             >
@@ -643,7 +706,7 @@
                         <div class="log-header">
                             <div class="log-title">Server Logs</div>
                             <button
-                                class="btn btn-secondary"
+                                class="btn btn-clear"
                                 id="frontend-clear-log"
                                 style="padding: 4px 10px; font-size: 11px"
                             >

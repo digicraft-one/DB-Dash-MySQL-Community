@@ -1,9 +1,9 @@
 {
-  "port": 3000,
+  "port": 24214,
   "host": "localhost",
   "logFile": "frontend/logs/server.log",
   "name": "Frontend Server",
   "description": "Vite React Frontend Server",
   "env": "development",
-  "backendUrl": "http://localhost:3001"
+  "backendUrl": "http://localhost:24211"
 }
