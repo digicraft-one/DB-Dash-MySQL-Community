@@ -366,7 +366,7 @@ function createTray() {
         },
     ]);
 
-    tray.setToolTip("DBDash");
+    tray.setToolTip("DBDash Community");
     tray.setContextMenu(contextMenu);
 
     tray.on("click", () => {
@@ -648,7 +648,7 @@ async function startServer(serverType) {
 
         logger.info(
             serverType,
-            `${config.name} server started successfully on port ${config.port}`,
+            `${config.name} started successfully on port ${config.port}`,
         );
 
         // Auto-open frontend in browser after ensuring it's ready
@@ -835,25 +835,47 @@ function openConfigFile(serverType) {
     logger.info("system", `Opening config file: ${configPath}`);
 
     if (process.platform === "win32") {
+        // Windows - force open in Notepad
         exec(`notepad "${configPath}"`, (err) => {
             if (err) {
                 logger.error(
                     "system",
                     `Failed to open config file in Notepad: ${err.message}`,
                 );
+                // Fallback to default handler if Notepad fails
+                shell.openPath(configPath).catch((fallbackErr) => {
+                    logger.error(
+                        "system",
+                        `Fallback open failed: ${fallbackErr.message}`,
+                    );
+                });
             } else {
                 logger.info("system", "Config file opened in Notepad");
             }
         });
+    } else if (process.platform === "darwin") {
+        // macOS - open with default text editor
+        exec(`open "${configPath}"`, (err) => {
+            if (err) {
+                logger.error(
+                    "system",
+                    `Failed to open config file: ${err.message}`,
+                );
+            }
+        });
     } else {
-        shell.openPath(configPath).catch((err) => {
-            logger.error(
-                "system",
-                `Failed to open config file: ${err.message}`,
-            );
+        // Linux - use xdg-open
+        exec(`xdg-open "${configPath}"`, (err) => {
+            if (err) {
+                logger.error(
+                    "system",
+                    `Failed to open config file: ${err.message}`,
+                );
+            }
         });
     }
 }
+
 function openLogFile(serverType) {
     const logDir = app.isPackaged
         ? path.join(process.resourcesPath, "app", serverType, "logs")
@@ -862,19 +884,43 @@ function openLogFile(serverType) {
     logger.info("system", `Opening log file: ${logPath}`);
 
     if (process.platform === "win32") {
+        // Windows - force open in Notepad
         exec(`notepad "${logPath}"`, (err) => {
             if (err) {
                 logger.error(
                     "system",
                     `Failed to open log file in Notepad: ${err.message}`,
                 );
+                // Fallback to default handler if Notepad fails
+                shell.openPath(logPath).catch((fallbackErr) => {
+                    logger.error(
+                        "system",
+                        `Fallback open failed: ${fallbackErr.message}`,
+                    );
+                });
             } else {
                 logger.info("system", "Log file opened in Notepad");
             }
         });
+    } else if (process.platform === "darwin") {
+        // macOS - open with default text editor
+        exec(`open "${logPath}"`, (err) => {
+            if (err) {
+                logger.error(
+                    "system",
+                    `Failed to open log file: ${err.message}`,
+                );
+            }
+        });
     } else {
-        shell.openPath(logPath).catch((err) => {
-            logger.error("system", `Failed to open log file: ${err.message}`);
+        // Linux - use xdg-open
+        exec(`xdg-open "${logPath}"`, (err) => {
+            if (err) {
+                logger.error(
+                    "system",
+                    `Failed to open log file: ${err.message}`,
+                );
+            }
         });
     }
 }
@@ -962,7 +1008,7 @@ if (!gotTheLock) {
         try {
             logger.info("system", "Application ready, initializing components");
 
-            await ensureNodeExists(mainWindow);
+            await ensureNodeExists(mainWindow, logger);
             configManager.initialize();
 
             configManager.on("configChanged", async (serverType) => {

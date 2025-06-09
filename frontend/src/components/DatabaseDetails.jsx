@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import {
-    FiActivity,
+    FiBarChart,
     FiCalendar,
     FiCode,
     FiDatabase,
     FiHardDrive,
     FiHash,
+    FiLayers,
     FiList,
-    FiLock,
-    FiRefreshCw,
-    FiUsers,
+    FiRepeat,
 } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import Error from "../ui/Error.jsx";
@@ -172,6 +171,22 @@ const DatabaseDetails = () => {
                 />
 
                 <InfoCard
+                    title="Total Rows"
+                    value={databaseInfo.totalRows?.toLocaleString()}
+                    icon={<FiBarChart className="text-lime-400 text-xl" />}
+                    iconBg="bg-lime-900/30"
+                    tooltip="Total number of rows across all tables"
+                />
+
+                <InfoCard
+                    title="Total Indexes"
+                    value={databaseInfo.totalIndexes}
+                    icon={<FiLayers className="text-fuchsia-400 text-xl" />}
+                    iconBg="bg-fuchsia-900/30"
+                    tooltip="Total number of indexes defined in the database"
+                />
+
+                <InfoCard
                     title="Collation"
                     value={databaseInfo.collation}
                     icon={<FiHash className="text-amber-400 text-xl" />}
@@ -209,34 +224,11 @@ const DatabaseDetails = () => {
                 />
 
                 <InfoCard
-                    title="Active Connections"
-                    value={
-                        <div className="space-y-2">
-                            <span className="text-2xl font-bold text-white">
-                                {databaseInfo.activeConnections || 0}
-                            </span>
-                            {databaseInfo.maxConnections && (
-                                <ProgressStat
-                                    value={databaseInfo.activeConnections || 0}
-                                    max={databaseInfo.maxConnections}
-                                    color={
-                                        databaseInfo.activeConnections /
-                                            databaseInfo.maxConnections >
-                                        0.8
-                                            ? "red"
-                                            : databaseInfo.activeConnections /
-                                                  databaseInfo.maxConnections >
-                                              0.5
-                                            ? "yellow"
-                                            : "green"
-                                    }
-                                    tooltip="Current connections vs maximum allowed connections"
-                                />
-                            )}
-                        </div>
-                    }
-                    icon={<FiUsers className="text-cyan-400 text-xl" />}
-                    iconBg="bg-cyan-900/30"
+                    title="Replication Role"
+                    value={databaseInfo.replication?.role || "Standalone"}
+                    icon={<FiRepeat className="text-teal-400 text-xl" />}
+                    iconBg="bg-teal-900/30"
+                    tooltip="Replication role of the database instance"
                 />
             </div>
 

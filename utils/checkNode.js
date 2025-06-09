@@ -65,15 +65,16 @@ function createProgressWindow() {
     return progressWindow;
 }
 
-function isNodeInstalled() {
+function isNodeInstalled(logger) {
     try {
         const version = execSync("node -v", { stdio: "pipe" })
             .toString()
             .trim();
-        console.log(`Node.js detected: ${version}`);
+
+        logger.info("system", `Nodejs detected: ${version}`);
         return true;
     } catch (err) {
-        console.log("Node.js not detected");
+        logger.info("system", `Nodejs not detected.`);
         return false;
     }
 }
@@ -283,8 +284,8 @@ function getPlatformSpecificMessage() {
     }
 }
 
-async function ensureNodeExists(mainWindow) {
-    if (isNodeInstalled()) return true;
+async function ensureNodeExists(mainWindow, logger) {
+    if (isNodeInstalled(logger)) return true;
 
     const platformMessage = getPlatformSpecificMessage();
 
@@ -324,7 +325,7 @@ async function ensureNodeExists(mainWindow) {
                 );
             }
         } catch (err) {
-            console.error("Installation error:", err);
+            logger.error(serverType, `Installation error : ${err}`);
 
             const errorMessage =
                 err.message.includes("Permission denied") ||

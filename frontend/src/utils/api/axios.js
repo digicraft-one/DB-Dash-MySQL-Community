@@ -77,11 +77,14 @@ const getTableDetails = (dbName, tableName) => {
     );
 };
 
-const getTableData = (dbName, tableName) => {
+const getTableData = (dbName, tableName, limit) => {
     return api.get(
         `/db/table/${encodeURIComponent(dbName)}/${encodeURIComponent(
             tableName,
         )}/data`,
+        {
+            params: { limit },
+        },
     );
 };
 

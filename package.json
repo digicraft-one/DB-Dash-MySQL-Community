@@ -4,17 +4,31 @@
     "description": "DBDash Community - MySQL Desktop Dashboard",
     "main": "main.js",
     "scripts": {
+        "install:frontend": "cd frontend && npm i",
+        "install:backend": "cd backend && npm i",
+        "setup": "npm i && npm run install:frontend && npm run install:backend",
         "start": "electron .",
         "dev": "electron .",
         "postinstall": "electron-rebuild",
         "build": "electron-builder",
-        "build:win": "electron-builder --win",
-        "build:mac": "electron-builder --mac",
+        "build:win": "electron-builder --win --x64 --ia32",
+        "build:mac": "electron-builder --mac --x64 --arm64",
         "build:linux": "electron-builder --linux",
         "clean": "rm -rf dist"
     },
-    "keywords": [],
-    "author": "DigiCraft",
+    "keywords": [
+        "electron",
+        "mysql",
+        "dashboard",
+        "database",
+        "client",
+        "desktop"
+    ],
+    "author": {
+        "name": "DigiCraft",
+        "email": "hello@digicraft.one",
+        "url": "https://digicraft.one"
+    },
     "license": "ISC",
     "type": "commonjs",
     "devDependencies": {
@@ -40,25 +54,24 @@
             "dashboard.js",
             "dashboard.html",
             "package.json",
-            "config/",
-            "assets/",
-            "backend/",
-            "frontend/",
-            "utils/",
-            "!.git/**",
-            "!backend/logs/server.log",
-            "!backend/.env",
+            "assets/**/*",
+            "backend/**/*",
+            "!backend/logs/**",
             "!backend/.gitignore",
             "!backend/package-lock.json",
-            "!frontend/logs/server.log",
-            "!frontend/src/.prettierrc",
+            "config/**/*",
+            "frontend/**/*",
+            "!frontend/logs/**",
             "!frontend/.gitignore",
-            "!frontend/eslint.config.js",
             "!frontend/package-lock.json",
+            "!frontend/eslint.config.js",
             "!frontend/README.md",
+            "!frontend/src/.prettierrc",
+            "utils/**/*",
+            "!**/*.log",
             "!.gitignore",
             "!.prettierrc",
-            "!.package-lock.json"
+            "!package-lock.json"
         ],
         "extraResources": [
             {
@@ -91,25 +104,45 @@
             }
         ],
         "win": {
-            "target": "nsis",
+            "target": [
+                "nsis",
+                "portable",
+                "zip",
+                "msi"
+            ],
             "icon": "assets/icons/icon.ico",
-            "artifactName": "${productName}-Setup-${version}.${ext}",
+            "artifactName": "${productName}-v${version}-setup-${arch}.${ext}",
             "publisherName": "DigiCraft"
         },
         "mac": {
-            "target": "dmg",
-            "icon": "assets/icons/icon.icns"
+            "target": [
+                "dmg",
+                "pkg",
+                "zip"
+            ],
+            "icon": "assets/icons/icon.icns",
+            "artifactName": "${productName}-v${version}-setup-${arch}.${ext}"
         },
         "linux": {
-            "target": "AppImage",
-            "icon": "assets/icons/icon.png"
+            "target": [
+                "AppImage",
+                "deb",
+                "rpm",
+                "snap",
+                "tar.gz"
+            ],
+            "icon": "assets/icons/icon.png",
+            "artifactName": "${productName}-v${version}-setup-${arch}.${ext}"
         },
         "nsis": {
             "oneClick": false,
             "allowToChangeInstallationDirectory": true,
             "createDesktopShortcut": true,
             "createStartMenuShortcut": true,
-            "shortcutName": "DBDash Community"
+            "shortcutName": "DBDash Community",
+            "installerIcon": "assets/icons/icon.ico",
+            "uninstallerIcon": "assets/icons/icon.ico",
+            "uninstallDisplayName": "Uninstall DBDash Community"
         }
     }
 }

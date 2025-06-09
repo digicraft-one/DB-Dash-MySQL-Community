@@ -30,7 +30,8 @@ const handleCreateTable = asyncHandler(async (req, res) => {
 
 const handleViewTableData = asyncHandler(async (req, res) => {
     const { dbName, tableName } = req.params;
-    const result = await viewTableData(dbName, tableName);
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+    const result = await viewTableData(dbName, tableName, limit);
     return res.status(200).json(result);
 });
 

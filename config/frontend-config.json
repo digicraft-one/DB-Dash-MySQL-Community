@@ -1,5 +1,5 @@
 {
-  "port": 24214,
+  "port": 24211,
   "host": "localhost",
   "logFile": "frontend/logs/server.log",
   "name": "Frontend Server",

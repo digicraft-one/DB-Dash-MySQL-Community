@@ -59,6 +59,7 @@ const Header = () => {
                         src="/logo_noBg.png"
                         alt="logo"
                         className="size-10 ml-4"
+                        draggable="false"
                     />
                 </Link>
                 <FiChevronRight className="h-4 w-4 text-gray-500 mx-1" />

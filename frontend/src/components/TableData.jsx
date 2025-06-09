@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+    FaCheck,
     FaCheckSquare,
     FaDatabase,
+    FaPen,
     FaPlus,
     FaSort,
     FaSortDown,
@@ -9,9 +11,8 @@ import {
     FaSquare,
     FaTimes,
     FaTrash,
-    FaCheck,
-    FaPen,
 } from "react-icons/fa";
+import { TbBookDownload } from "react-icons/tb";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Error from "../ui/Error.jsx";
@@ -38,13 +39,19 @@ const TableData = () => {
     const [editingCell, setEditingCell] = useState(null); // { rowIndex, colName }
     const [editValue, setEditValue] = useState("");
     const inputRef = useRef(null);
+    const [allDataFetched, setAllDataFetched] = useState(false);
 
-    const fetchTableData = async () => {
+    const fetchTableData = async (forceFetchAll = false) => {
         try {
             setLoading(true);
             setError(null);
-            const { data } = await getTableData(dbName, tableName);
+            const { data } = await getTableData(
+                dbName,
+                tableName,
+                forceFetchAll || allDataFetched ? null : 100,
+            );
             setTableData(data);
+            setAllDataFetched(data.all);
             setSelectedRows(new Set()); // Clear selection on refresh
             setIsSelectAll(false);
             setSortConfig({ key: null, direction: "default" });
@@ -568,6 +575,24 @@ const TableData = () => {
                         )}
                     </tbody>
                 </table>
+                <div className="w-full h-20 flex justify-center items-center text-white">
+                    {!allDataFetched ? (
+                        <button
+                            className="border flex justify-center items-center gap-2 text-lg font-sans px-2 py-1 rounded-md"
+                            onClick={async () => {
+                                setAllDataFetched(true);
+                                await fetchTableData(true);
+                            }}
+                        >
+                            <TbBookDownload />
+                            Load More
+                        </button>
+                    ) : (
+                        <div className="border flex justify-center items-center gap-2 text-lg font-sans px-2 py-1 rounded-md">
+                            No More Data{" "}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Status footer */}

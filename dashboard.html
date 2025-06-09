@@ -67,15 +67,18 @@
             }
 
             .window-controls {
+                height: 100%;
                 display: flex;
+                justify-content: center;
+                align-items: center;
                 -webkit-app-region: no-drag;
                 gap: 8px;
+                overflow: hidden;
             }
 
-            .window-control {
+            #mac .window-control {
                 width: 14px;
                 height: 14px;
-                /* border-radius: 50%; */
                 cursor: pointer;
                 transition: all 0.2s ease;
                 display: flex;
@@ -83,8 +86,18 @@
                 justify-content: center;
             }
 
+            #win .window-control {
+                height: 100%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+            }
+
             .window-control:hover {
-                transform: scale(1.2);
+                background-color: var(--card-bg);
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             }
 
@@ -102,16 +115,11 @@
             }
 
             #win .close-btn {
-                width: 25px;
-                background-color: var(--card-bg);
+                background-color: #ff3d3daf;
             }
-            #win .minimize-btn {
-                width: 25px;
-                background-color: var(--card-bg);
-            }
-            #win .maximize-btn {
-                width: 25px;
-                background-color: var(--card-bg);
+
+            #win .close-btn:hover {
+                background-color: #ff0000;
             }
 
             /* Main Content */
@@ -132,7 +140,6 @@
                 display: grid;
                 grid-template-columns: 1fr;
                 gap: 24px;
-                max-width: 90%;
                 width: 100%;
                 margin: 0 auto;
             }
@@ -167,21 +174,6 @@
                 letter-spacing: 0.5px;
             }
 
-            .server-name::before {
-                content: "";
-                display: block;
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                box-shadow: 0 0 10px rgba(214, 48, 49, 0.5);
-                transition: all 0.3s ease;
-            }
-
-            .server-name.running::before {
-                background-color: var(--status-running);
-                box-shadow: 0 0 15px rgba(0, 184, 148, 0.7);
-            }
-
             .status-badge {
                 padding: 6px 16px;
                 border-radius: 25px;
@@ -199,11 +191,6 @@
             }
 
             .status-running {
-                background: linear-gradient(
-                    135deg,
-                    rgba(0, 184, 148, 0.2),
-                    rgba(0, 184, 148, 0.1)
-                );
                 color: var(--status-running);
                 border-color: rgba(0, 184, 148, 0.3);
             }
@@ -272,9 +259,11 @@
             }
 
             .btn-clear {
-                background-color: var(--status-stopped);
+                height: 25px;
+                width: 50px;
+                background-color: rgba(255, 0, 51, 0.834);
                 color: var(--text-color);
-                padding: 2px;
+                padding: 1px;
             }
 
             .btn:disabled {
@@ -379,6 +368,7 @@
             }
 
             .log-content {
+                padding: 0px 2px;
                 flex: 1;
                 word-break: break-word;
             }

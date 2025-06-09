@@ -107,19 +107,36 @@ function updateServerUI(server, isRunning) {
 function ansiToHtml(str) {
     const colorMap = {
         30: "#586e75",
-        31: "#ff6b6b",
-        32: "#859900",
-        33: "#feca57",
-        34: "#54a0ff",
-        35: "#d33682",
-        36: "#2aa198",
-        37: "#eee8d5",
-        90: "#839496",
+        31: "#e74c3c",
+        32: "#9b59b6",
+        33: "#9b59b6",
+        34: "#3498db",
+        35: "#1abc9c",
+        36: "#f39c12",
+        37: "#ecf0f1",
+        90: "#7f8c8d",
+        39: "#ecf0f1",
     };
 
-    return str.replace(/\x1b\[(\d+)m/g, (match, code) => {
-        if (code === "0") return "</span>";
-        return colorMap[code] ? `<span style="color: ${colorMap[code]}">` : "";
+    let openSpan = false;
+
+    return str.replace(/\x1b\[(\d+)m/g, (_, code) => {
+        code = Number(code);
+        if (code === 0 || code === 39) {
+            if (openSpan) {
+                openSpan = false;
+                return "</span>";
+            }
+            return "";
+        }
+
+        const color = colorMap[code];
+        if (color) {
+            openSpan = true;
+            return `<span style="color: ${color}">`;
+        }
+
+        return "";
     });
 }
 
@@ -221,6 +238,9 @@ winCloseBtn.addEventListener("click", () => ipcRenderer.send("close-window"));
 minimizeBtn.title = "Minimize Window";
 maximizeBtn.title = "Maximize/Restore Window";
 closeBtn.title = "Close Application";
+winMinimizeBtn.title = "Minimize Window";
+winMaximizeBtn.title = "Maximize/Restore Window";
+winCloseBtn.title = "Close Application";
 
 // --- IPC Handlers from Main ---
 

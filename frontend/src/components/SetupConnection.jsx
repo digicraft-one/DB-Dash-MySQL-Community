@@ -1,13 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {
+    FiChevronRight,
     FiDatabase,
-    FiLink,
     FiLoader,
     FiServer,
     FiWifi,
     FiWifiOff,
-    FiChevronRight,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
@@ -170,7 +169,9 @@ const GetStartedSection = () => (
                 <FiChevronRight className="group-hover:translate-x-1 transition-transform group-hover:animate-ping" />
             </Link>
         </div>
-        <span className="text-sm text-center mt-6 text-purple-500 font-sans">Note : Press <b>F11</b> for best experience</span>
+        <span className="text-sm text-center mt-6 text-purple-500 font-sans">
+            Note : Press <b>F11</b> for best experience
+        </span>
     </div>
 );
 
@@ -181,7 +182,12 @@ const SetupConnection = () => {
         <div className="min-h-screen w-full bg-gray-900 flex place-items-center text-gray-100">
             <div className="container mx-auto px-4 py-12">
                 <header className="text-center mb-12 flex flex-col justify-center items-center">
-                    <img src="/logo_noBg.png" alt="logo" className="size-40" />
+                    <img
+                        src="/logo_noBg.png"
+                        alt="logo"
+                        className="size-40"
+                        draggable={false}
+                    />
                     <div>
                         <h1 className="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-blue-500">
                             MySQL Connection Manager

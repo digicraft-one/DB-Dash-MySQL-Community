@@ -164,32 +164,37 @@ const getDatabaseOverview = async (dbName) => {
                 "MySQL",
         };
 
-        // Basic database existence check
+        // Check if DB exists
         const [databases] = await pool.query(
             "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = ?",
             [dbName],
         );
-
         if (databases.length === 0) {
             throw new MyError(404, `Database '${dbName}' not found`);
         }
 
-        // Basic database stats
+        // Basic table stats
         const [tableStats] = await pool.query(
             `SELECT 
                 COUNT(*) AS table_count,
                 SUM(data_length + index_length) AS total_size,
                 SUM(table_rows) AS total_rows,
-                SUM(index_length) AS total_index_size,
-                COUNT(index_name) AS total_indexes
-            FROM information_schema.tables t
-            LEFT JOIN information_schema.statistics s 
-                ON t.table_schema = s.table_schema AND t.table_name = s.table_name
-            WHERE t.table_schema = ?`,
+                SUM(index_length) AS total_index_size
+            FROM information_schema.tables
+            WHERE table_schema = ?`,
             [dbName],
         );
 
-        // Schema information
+        // Accurate index count (separate query)
+        const [indexStats] = await pool.query(
+            `SELECT 
+                COUNT(DISTINCT index_name) AS total_indexes 
+            FROM information_schema.statistics 
+            WHERE table_schema = ?`,
+            [dbName],
+        );
+
+        // Schema info
         const [schemaInfo] = await pool.query(
             `SELECT 
                 default_character_set_name AS charset,
@@ -199,31 +204,14 @@ const getDatabaseOverview = async (dbName) => {
             [dbName],
         );
 
-        // Creation date
+        // Creation date fallback
         const [createDateResult] = await pool.query(
-            `SELECT CREATE_TIME 
+            `SELECT 
+                MIN(CREATE_TIME) AS CREATE_TIME
              FROM information_schema.tables 
-             WHERE table_schema = ? 
-             ORDER BY CREATE_TIME ASC 
-             LIMIT 1`,
+             WHERE table_schema = ?
+             AND CREATE_TIME IS NOT NULL`,
             [dbName],
-        );
-
-        // Server version
-        const [versionResult] = await pool.query("SELECT VERSION() as version");
-
-        // Connection info
-        const [connectionInfo] = await pool.query(
-            `SHOW VARIABLES LIKE 'max_connections'`,
-        );
-        const [activeConnections] = await pool.query(
-            `SELECT COUNT(*) as connections FROM information_schema.processlist WHERE db = ?`,
-            [dbName],
-        );
-
-        // Query cache info
-        const [queryCacheInfo] = await pool.query(
-            `SHOW VARIABLES LIKE 'query_cache_size'`,
         );
 
         // User privileges
@@ -233,7 +221,7 @@ const getDatabaseOverview = async (dbName) => {
             [dbName],
         );
 
-        // Replication status
+        // Replication info
         let replication = null;
         try {
             const [replicationStatus] = await pool.query(`SHOW SLAVE STATUS`);
@@ -254,7 +242,7 @@ const getDatabaseOverview = async (dbName) => {
             console.log("Replication check failed:", e.message);
         }
 
-        // Largest tables (corrected query)
+        // Top 5 largest tables
         const [largestTables] = await pool.query(
             `SELECT 
                 table_name as name,
@@ -277,14 +265,10 @@ const getDatabaseOverview = async (dbName) => {
             ),
             numberOfTables: tableStats[0].table_count,
             totalRows: tableStats[0].total_rows,
-            totalIndexes: tableStats[0].total_indexes,
+            totalIndexes: indexStats[0]?.total_indexes || 0,
             collation: schemaInfo[0]?.collation || "Unknown",
             charset: schemaInfo[0]?.charset || "Unknown",
             creationDate: createDateResult[0]?.CREATE_TIME || "Unknown",
-            version: versionResult[0]?.version,
-            maxConnections: connectionInfo[0]?.Value,
-            activeConnections: activeConnections[0]?.connections,
-            queryCacheSize: queryCacheInfo[0]?.Value,
             userPrivileges,
             replication,
             largestTables,

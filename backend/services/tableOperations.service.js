@@ -138,13 +138,13 @@ const createTable = async (dbName, tableName, columns) => {
     }
 };
 
-const viewTableData = async (dbName, tableName) => {
+const viewTableData = async (dbName, tableName, limit) => {
     try {
         const pool = getMySQLPool();
+        let query = `SELECT * FROM \`${dbName}\`.\`${tableName}\``;
+        if (limit && !isNaN(limit) && limit > 0) query += ` LIMIT ${limit}`;
 
-        const [rows] = await pool.query(
-            `SELECT * FROM \`${dbName}\`.\`${tableName}\` LIMIT 100`,
-        );
+        const [rows] = await pool.query(query);
 
         const [columnInfo] = await pool.query(
             `SELECT COLUMN_NAME, COLUMN_TYPE 
@@ -163,6 +163,7 @@ const viewTableData = async (dbName, tableName) => {
             success: true,
             columns,
             data: rows,
+            all: !limit,
         };
     } catch (error) {
         throw new MyError(500, `Failed to retrieve data: ${error.message}`);
