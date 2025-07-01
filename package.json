@@ -49,7 +49,7 @@
             "**/backend/**",
             "**/config/**"
         ],
-        "afterPack": "build/afterpack.js",
+        "afterPack": "utils/afterpack.js",
         "files": [
             "main.js",
             "dashboard.js",
