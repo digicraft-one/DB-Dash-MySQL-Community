@@ -4,6 +4,6 @@
   "logFile": "frontend/logs/server.log",
   "name": "Frontend Server",
   "description": "Vite React Frontend Server",
-  "env": "development",
-  "backendUrl": "http://localhost:24211"
+  "env": "production",
+  "backendUrl": "http://localhost:24207"
 }

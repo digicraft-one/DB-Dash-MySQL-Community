@@ -25,21 +25,21 @@ class ConfigManager extends EventEmitter {
 
         this.defaultConfigs = {
             backend: {
-                port: 3001,
+                port: 24207,
                 host: "localhost",
                 logFile: path.join(this.backendLogDir, "server.log"),
                 name: "Backend Server",
                 description: "Express.js Backend Server",
-                env: "development",
+                env: "production",
             },
             frontend: {
-                port: 3000,
+                port: 24211,
                 host: "localhost",
                 logFile: path.join(this.frontendLogDir, "server.log"),
                 name: "Frontend Dev Server",
-                description: "Vite React Development Server",
-                env: "development",
-                backendUrl: "http://localhost:3001",
+                description: "Vite React Server",
+                env: "production",
+                backendUrl: "http://localhost:24207",
             },
         };
 

@@ -49,6 +49,7 @@
             "**/backend/**",
             "**/config/**"
         ],
+        "afterPack": "build/afterpack.js",
         "files": [
             "main.js",
             "dashboard.js",

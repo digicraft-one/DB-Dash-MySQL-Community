@@ -21,11 +21,11 @@ try {
     );
 } catch (error) {
     console.warn("Could not load backend config, using defaults.");
-    config = { port: 3001, host: "0.0.0.0" }; // Default host to 0.0.0.0
+    config = { port: 24207, host: "0.0.0.0" }; // Default host to 0.0.0.0
 }
 
 const app = express();
-const port = config.port || 3001;
+const port = config.port || 24207;
 const host = config.host || "0.0.0.0"; // Use configured host or default
 
 app.use(cors());

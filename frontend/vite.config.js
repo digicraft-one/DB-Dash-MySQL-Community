@@ -10,12 +10,12 @@ try {
   fileConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config', 'frontend-config.json'), 'utf8'))
 } catch (error) {
   console.warn('Could not load frontend config file, using defaults.')
-  fileConfig = { port: 3000, host: 'localhost', backendUrl: 'http://localhost:3001' } // Added default host
+  fileConfig = { port: 24211, host: 'localhost', backendUrl: 'http://localhost:24207' } // Added default host
 }
 
 // Determine Actual Backend URL
 // Prioritize environment variable set by Electron main process
-const actualBackendUrl = process.env.ACTUAL_BACKEND_URL || fileConfig.backendUrl || 'http://localhost:3001'
+const actualBackendUrl = process.env.ACTUAL_BACKEND_URL || fileConfig.backendUrl || 'http://localhost:24207'
 
 // Frontend Server Settings
 const frontendPort = fileConfig.port || 3000

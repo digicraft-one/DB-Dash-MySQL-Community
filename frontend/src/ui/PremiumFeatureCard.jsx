@@ -12,13 +12,13 @@ const PremiumFeatureModal = ({
             className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={onClose}
         >
-            <div className="relative w-full max-w-md p-1">
+            <div className="relative w-full max-w-lg p-1">
                 {/* Glowing Border with Enhanced Gradient */}
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 bg-animated-border z-[-1] shadow-[0_0_20px_rgba(234,179,8,0.6)]" />
 
                 {/* Modal Content Box */}
                 <div
-                    className="relative z-10 max-w-md w-full bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl p-8 border border-yellow-500/30"
+                    className="relative z-10 max-w-lg w-full bg-gradient-to-b from-slate-900 to-slate-950 rounded-xl p-8 border border-yellow-500/30"
                     style={{
                         animation:
                             "fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
@@ -59,7 +59,7 @@ const PremiumFeatureModal = ({
                     <div className="mt-6 pt-4 border-t border-yellow-700/50 text-sm text-gray-300 text-center flex items-center justify-center gap-2">
                         <FaStar className="text-yellow-400" />
                         <span>
-                            One-time payment. Lifetime access. No hidden fees.
+                            Monthly payments. Unrestricted access. No hidden fees.
                         </span>
                         <FaStar className="text-yellow-400" />
                     </div>
